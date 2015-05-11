@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html ng-app="lock">
+	<head>
+		<title>Main</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="js/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<script type="text/javascript" src="js/app.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<link rel="manifest" href="../../manifest.json">
+	</head>
+	<body ng-controller="DatabaseController as dbCtrl">
+		<div class="page-countainer" ng-controller="PageController as pageCtrl">
+			<img src="images/rethink_logo.png">
+			<div class="main-page" ng-show="pageCtrl.isCurrent(2)" ng-init="dbCtrl.tokenCheck()">
+				<input class="button-green" id="unlockButton" type="button" value="Unlock!" ng-click="dbCtrl.unlock()"><br>
+				<input class="button-blue" type="button" value="Log History" ng-click="pageCtrl.setCurrent(3)"><br>
+				<input class="button-blue" type="button" value="List Users" ng-click="pageCtrl.setCurrent(4)"><br>
+				<input class="button-red" id="logOutButton" type="button" value="Log Out" ng-click="dbCtrl.logOut()">
+			</div>
+			<div id="Log-History" class="history-page" ng-show="pageCtrl.isCurrent(3)" ng-init="dbCtrl.getLog();" style="display:none">
+				History<br>
+				<div ng-repeat="line in dbCtrl.logData | limitTo:limit:begin">
+					{{line}}<hr>
+				</div>
+				<input class="button-blue" type="button" value="Back" ng-click="pageCtrl.setCurrent(2)">
+			</div>
+			<div id="List-Users"  class="users-page" ng-controller="UserController as userCtrl" ng-show="pageCtrl.isCurrent(4)" ng-init="userCtrl.getAll(); userCtrl.initPage()" style="display:none">
+				Users<hr>
+				<input class="button-blue" id="refreshButton" type="button" value="Refresh" ng-click="userCtrl.getAll()">
+				<hr>
+				<div ng-repeat="user in userCtrl.users">
+					<center>
+					<form>
+					<table ng-init="userCtrl.initUser(user)">
+						<tr>
+							<td style="text-align:left;">Username: {{user.username}}</td>
+							<td><input class="small-red-button" type="button" value="Delete" ng-click="userCtrl.deleteUser(user);"></td>
+						</tr>
+						<tr>
+							<td style="width:170px; text-align:left;">
+								AdminLvl: 
+								<label ng-show="!user.editAdmin">{{user.adminLvl}}</label>
+								<select ng-show="user.editAdmin" ng-model="user.adminLvl">
+									<option selected value="1">1</option>
+									<option value="2">2</option>
+								</select>
+							</td>
+							<td>
+								<input class="small-blue-button" type="button" value="Edit" ng-show="!user.editAdmin" ng-click="userCtrl.setEditAdmin(user, true)">
+								<input class="small-green-button" type="button" value="Save" ng-show="user.editAdmin" ng-click="userCtrl.setEditAdmin(user, false); userCtrl.saveChange(user, 'adminLvl')">
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align:left;">
+								CardNo: 
+								<label ng-show="!user.editCard">{{user.cardNo}}</label>
+								<input type="text" ng-model="user.cardNo" ng-show="user.editCard"> 
+							</td>
+							<td>
+								<input class="small-blue-button" type="button" value="Edit" ng-show="!user.editCard" ng-click="userCtrl.setEditCard(user, true)">
+								<input class="small-green-button" type="button" value="Save" ng-show="user.editCard" ng-click="userCtrl.setEditCard(user, false); userCtrl.saveChange(user, 'cardNo')">
+							</td>
+						</tr>
+					</table>
+					</form>
+					</center>
+					<hr>
+				</div>
+				<input class="button-blue" type="button" value="Add New User" ng-click="userCtrl.setAddUser(true)" ng-show="!userCtrl.newUser.showForm"><br>
+				<form ng-show="userCtrl.newUser.showForm">
+					<input type="text" placeholder="Username" ng-model="userCtrl.newUser.username"><br>
+					<input type="password" placeholder="Password" ng-model="userCtrl.newUser.password"><br>
+					<input type="text" placeholder="CardNo" ng-model="userCtrl.newUser.cardNo"><br>
+					<select class-"drop-down" ng-model="userCtrl.newUser.adminLvl">
+						<option value="1">Admin</option>
+						<option value="2" selected>Regular</option>
+					</select><br><br>
+					<input class="button-green" type="button" value="Save" ng-click="userCtrl.saveNewUser(); userCtrl.initPage()"><br>
+					<input class="button-red" type="button" value="Back" ng-click="userCtrl.setAddUser(false)" ng-show="userCtrl.newUser.showForm">
+				</form>
+				<input class="button-red" type="button" value="Back" ng-click="pageCtrl.setCurrent(2)" ng-show="!userCtrl.newUser.showForm">
+			</div>
+		</div>
+		<script type="text/javascript" src="js/jquery-2.1.3.js"></script>
+		<script type="text/javascript" src="js/db.js"></script>
+	</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Node.js NickDoorLock",
+  "description": "An app used to unlock the office door",
+  "repository": "https://github.com/heroku/nick-door-lock",
+  "keywords": ["node", "express", "static"]
+}
